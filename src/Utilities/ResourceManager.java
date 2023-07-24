@@ -25,6 +25,11 @@ public class ResourceManager {
             throw new RuntimeException(e);
         }
     }
+    //temp animation load animation function, thinking about using frame count as loop condition loop and add each file
+    //into a list and return it, i would probably need another parameter for the path to get this to work
+    private static List<BufferedImage> loadAnimations(int frameCount){
+        return null;
+    }
 
     private static void initSprites(){
         try {
