@@ -3,8 +3,8 @@
 
 | Student Information |                |
 |:-------------------:|----------------|
-|  Student Name       |   Name Here    |
-|  Student Email      |   Email Here   |
+|  Student Name       | Yakoub Alkabsh |
+|  Student Email      | yalkabsh2@sfsu.edu             |
 
 ## src Folder Purpose 
 src folder is to be used to store source code only.
@@ -37,10 +37,10 @@ The jar folder is to be used to store the built jar of your term-project.
 
 |               | Player 1 | Player 2 |
 |---------------|----------|----------|
-|  Forward      |          |          |
-|  Backward     |          |          |
-|  Rotate left  |          |          |
-|  Rotate Right |          |          |
-|  Shoot        |          |          |
+|  Forward      | W        | I        |
+|  Backward     | S        | K        |
+|  Rotate left  | A        | J        |
+|  Rotate Right | D        | L        |
+|  Shoot        | C        | Space    |
 
 <!-- you may add more controls if you need to. -->
