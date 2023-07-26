@@ -143,7 +143,7 @@ public class Tank{
         g2d.drawImage(this.img, rotation, null);
         g2d.setColor(Color.RED);
         //g2d.rotate(Math.toRadians(angle), bounds.x + bounds.width/2, bounds.y + bounds.height/2);
-        g2d.drawRect((int)x,(int)y,this.img.getWidth(), this.img.getHeight());
+        //g2d.drawRect((int)x,(int)y,this.img.getWidth(), this.img.getHeight());
 
     }
 }

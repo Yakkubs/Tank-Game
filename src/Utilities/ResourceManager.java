@@ -36,7 +36,7 @@ public class ResourceManager {
             ResourceManager.sprites.put("bullet",loadSprite("bullet/bullet.jpg"));
             ResourceManager.sprites.put("rocket1",loadSprite("bullet/rocket1.png"));
             ResourceManager.sprites.put("rocket2",loadSprite("bullet/rocket2.png"));
-            ResourceManager.sprites.put("background",loadSprite("floor/bg.bmp"));
+            ResourceManager.sprites.put("floor",loadSprite("floor/bg.bmp"));
             ResourceManager.sprites.put("menu", loadSprite("menu/title.png"));
             ResourceManager.sprites.put("health",loadSprite("powerups/health.png"));
             ResourceManager.sprites.put("shield",loadSprite("powerups/shield.png"));
