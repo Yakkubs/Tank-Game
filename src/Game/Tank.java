@@ -12,6 +12,8 @@ public class Tank{
 
     private float x;
     private float y;
+    private float screenX;
+    private float screenY;
     private float vx;
     private float vy;
     private float angle;
@@ -129,6 +131,18 @@ public class Tank{
             y = GameConstants.GAME_SCREEN_HEIGHT - 80;
         }
     }
+    public void centerScreen(){
+        this.screenX = x - GameConstants.GAME_SCREEN_WIDTH/4.0f;
+        this.screenY = y = GameConstants.GAME_SCREEN_HEIGHT/2.0f;
+        if(screenX < 0) this.screenX = 0;
+        if(screenY < 0) this.screenY = 0;
+        if(screenX > GameConstants.GAME_WORLD_WIDTH-GameConstants.GAME_SCREEN_WIDTH/2.0f){
+            screenX = GameConstants.GAME_WORLD_WIDTH-GameConstants.GAME_SCREEN_WIDTH/2.0f;
+        }
+        if(screenY > GameConstants.GAME_WORLD_HEIGHT-GameConstants.GAME_SCREEN_HEIGHT){
+            screenY = GameConstants.GAME_WORLD_HEIGHT-GameConstants.GAME_SCREEN_HEIGHT;
+        }
+    }
 
     @Override
     public String toString() {
@@ -145,5 +159,13 @@ public class Tank{
         //g2d.rotate(Math.toRadians(angle), bounds.x + bounds.width/2, bounds.y + bounds.height/2);
         //g2d.drawRect((int)x,(int)y,this.img.getWidth(), this.img.getHeight());
 
+    }
+
+    public float getScreenX() {
+        return screenX;
+    }
+
+    public float getScreenY() {
+        return screenY;
     }
 }
