@@ -2,6 +2,7 @@ package GameObjects;
 
 
 import Game.GameConstants;
+import Game.GameWorld;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;

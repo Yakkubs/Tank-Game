@@ -10,11 +10,13 @@ import java.awt.image.BufferedImage;
 public class Hud {
     private Tank tank1;
     private Tank tank2;
+    private float scaleFactor = .90F;
 
-    public Hud(Graphics2D g2d, BufferedImage world){
+    public Hud(Graphics2D g2d, BufferedImage world,int x,Color color){
         g2d.setColor(Color.BLACK);
-        g2d.fillRect(0, GameConstants.GAME_SCREEN_HEIGHT-(GameConstants.GAME_SCREEN_HEIGHT/3),GameConstants.HUD_SCREEN_WIDTH,GameConstants.HUD_SCREEN_HEIGHT);
-        g2d.setColor(Color.GREEN);
+        g2d.fillRect(x, (int) (GameConstants.GAME_SCREEN_HEIGHT*(2/3.0)),447,GameConstants.HUD_SCREEN_HEIGHT-40);
+        g2d.setColor(color);
+        g2d.drawRect(x, (int) (GameConstants.GAME_SCREEN_HEIGHT*(2/3.0)),447,GameConstants.HUD_SCREEN_HEIGHT-40);
         g2d.drawRect(100,GameConstants.GAME_SCREEN_HEIGHT-GameConstants.HUD_SCREEN_HEIGHT+100, (int) 100,15);
         g2d.fillRect(100,GameConstants.GAME_SCREEN_HEIGHT-GameConstants.HUD_SCREEN_HEIGHT+100, (int) 100,15);
 //        double scaleFactor = 0.2;

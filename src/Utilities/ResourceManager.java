@@ -41,6 +41,7 @@ public class ResourceManager {
             ResourceManager.sprites.put("health",loadSprite("powerups/health.png"));
             ResourceManager.sprites.put("shield",loadSprite("powerups/shield.png"));
             ResourceManager.sprites.put("speed",loadSprite("powerups/speed.png"));
+            ResourceManager.sprites.put("damage",loadSprite("powerups/damage.png"));
             ResourceManager.sprites.put("tank1",loadSprite("Sprites-yak/TanksMRed.png"));
             ResourceManager.sprites.put("tank2",loadSprite("Sprites-yak/TanksMBlue.png"));
             ResourceManager.sprites.put("break1",loadSprite("walls/break1.jpg"));

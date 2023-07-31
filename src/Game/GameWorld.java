@@ -1,5 +1,6 @@
 package Game;
 
+import GameObjects.Bullet;
 import GameObjects.GameObject;
 import GameObjects.PowerUps;
 import GameObjects.Wall;
@@ -15,7 +16,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  * @author anthony-pc
@@ -35,6 +35,7 @@ public class GameWorld extends JPanel implements Runnable {
     public GameWorld(Launcher lf) {
         this.lf = lf;
     }
+
 
     @Override
     public void run() {
@@ -150,7 +151,8 @@ public class GameWorld extends JPanel implements Runnable {
         this.t1.drawImage(buffer);
         this.t2.drawImage(buffer);
         splitScreens(g2);
-        Hud hud = new Hud(g2,this.world);
+        Hud p1Hud = new Hud(g2,this.world,0,Color.RED);
+        Hud p2Hud = new Hud(g2,this.world,GameConstants.GAME_SCREEN_WIDTH-447,Color.BLUE);
         renderMiniMap(g2);
     }
 }

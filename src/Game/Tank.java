@@ -25,6 +25,7 @@ public class Tank extends GameObject {
     long coolDown = 1000;
     private int health;
     private int armor;
+    private int bulletDamage;
     private float R = 5;
     private float ROTATIONSPEED = 3.0f;
 
@@ -110,6 +111,7 @@ public class Tank extends GameObject {
         if (this.ShootPressed && ((this.timeSinceLastShot + this.coolDown) < System.currentTimeMillis())) {
             this.timeSinceLastShot = System.currentTimeMillis();
             this.ammo.add(new Bullet(x,y, ResourceManager.getSprite("bullet"),angle));
+
         }
         this.ammo.forEach(Bullet::update);
         this.hitBox.setLocation((int)x,(int)y);
@@ -194,6 +196,7 @@ public class Tank extends GameObject {
     public void collides(GameObject with) {
         if(with instanceof Bullet){
             this.health--;
+            System.out.println(this.health);
         }else if(with instanceof Wall wall){
             //stop
         }else if(with instanceof PowerUps pw){

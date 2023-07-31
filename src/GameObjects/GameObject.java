@@ -25,6 +25,7 @@ public abstract class GameObject {
             case "4" -> new Health(x,y, ResourceManager.getSprite("health"));
             case "5" -> new Speed(x,y, ResourceManager.getSprite("speed"));
             case "6" -> new Shield(x,y, ResourceManager.getSprite("shield"));
+            case "7" -> new Damage(x,y,ResourceManager.getSprite("damage"));
             default -> throw new UnsupportedOperationException();
         };
     }
