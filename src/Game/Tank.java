@@ -1,44 +1,56 @@
 package Game;
 
+import GameObjects.Bullet;
+import GameObjects.GameObject;
+import Utilities.ResourceManager;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author anthony-pc
  */
-public class Tank{
+public class Tank extends GameObject {
 
-    private float x;
-    private float y;
     private float screenX;
     private float screenY;
     private float vx;
     private float vy;
     private float angle;
-
+    private List<Bullet> ammo = new ArrayList<Bullet>();
+    long timeSinceLastShot = 0L;
+    long coolDown = 1000;
+    private int health;
+    private int armor;
     private float R = 5;
     private float ROTATIONSPEED = 3.0f;
 
-    private BufferedImage img;
     private boolean UpPressed;
     private boolean DownPressed;
     private boolean RightPressed;
     private boolean LeftPressed;
+    private boolean ShootPressed;
 
     Tank(float x, float y, float vx, float vy, float angle, BufferedImage img) {
-        this.x = x;
-        this.y = y;
+        super(x,y,img);
         this.vx = vx;
         this.vy = vy;
-        this.img = img;
         this.angle = angle;
+        this.health = 5;
+        this.armor = 0;
     }
 
-    void setX(float x){ this.x = x; }
+    void setX(float x) {
+        this.x = x;
+    }
 
-    void setY(float y) { this. y = y;}
+    void setY(float y) {
+        this.y = y;
+    }
 
     void toggleUpPressed() {
         this.UpPressed = true;
@@ -54,6 +66,10 @@ public class Tank{
 
     void toggleLeftPressed() {
         this.LeftPressed = true;
+    }
+
+    void toggleShootPressed() {
+        this.ShootPressed = true;
     }
 
     void unToggleUpPressed() {
@@ -72,6 +88,10 @@ public class Tank{
         this.LeftPressed = false;
     }
 
+    void unToggleShootPressed() {
+        this.ShootPressed = false;
+    }
+
     void update() {
         if (this.UpPressed) {
             this.moveForwards();
@@ -88,8 +108,11 @@ public class Tank{
         if (this.RightPressed) {
             this.rotateRight();
         }
-
-
+        if (this.ShootPressed && ((this.timeSinceLastShot + this.coolDown) < System.currentTimeMillis())) {
+            this.timeSinceLastShot = System.currentTimeMillis();
+            this.ammo.add(new Bullet(x,y, ResourceManager.getSprite("bullet"),angle));
+        }
+        this.ammo.forEach(Bullet::update);
     }
 
     private void rotateLeft() {
@@ -101,11 +124,11 @@ public class Tank{
     }
 
     private void moveBackwards() {
-        vx =  Math.round(R * Math.cos(Math.toRadians(angle)));
-        vy =  Math.round(R * Math.sin(Math.toRadians(angle)));
+        vx = Math.round(R * Math.cos(Math.toRadians(angle)));
+        vy = Math.round(R * Math.sin(Math.toRadians(angle)));
         x -= vx;
         y -= vy;
-       checkBorder();
+        checkBorder();
     }
 
     private void moveForwards() {
@@ -121,26 +144,27 @@ public class Tank{
         if (x < 30) {
             x = 30;
         }
-        if (x >= GameConstants.GAME_SCREEN_WIDTH - 88) {
-            x = GameConstants.GAME_SCREEN_WIDTH - 88;
+        if (x >= GameConstants.GAME_WORLD_WIDTH - 80) {
+            x = GameConstants.GAME_WORLD_WIDTH - 80;
         }
-        if (y < 40) {
-            y = 40;
+        if (y < 30) {
+            y = 30;
         }
-        if (y >= GameConstants.GAME_SCREEN_HEIGHT - 80) {
-            y = GameConstants.GAME_SCREEN_HEIGHT - 80;
+        if (y >= GameConstants.GAME_WORLD_HEIGHT - 80) {
+            y = GameConstants.GAME_WORLD_HEIGHT - 80;
         }
     }
-    public void centerScreen(){
-        this.screenX = x - GameConstants.GAME_SCREEN_WIDTH/4.0f;
-        this.screenY = y = GameConstants.GAME_SCREEN_HEIGHT/2.0f;
-        if(screenX < 0) this.screenX = 0;
-        if(screenY < 0) this.screenY = 0;
-        if(screenX > GameConstants.GAME_WORLD_WIDTH-GameConstants.GAME_SCREEN_WIDTH/2.0f){
-            screenX = GameConstants.GAME_WORLD_WIDTH-GameConstants.GAME_SCREEN_WIDTH/2.0f;
+
+    public void centerScreen() {
+        this.screenX = x - GameConstants.GAME_SCREEN_WIDTH / 4.0f;
+        this.screenY = y - GameConstants.GAME_SCREEN_HEIGHT / 2.0f;
+        if (screenX < 0) this.screenX = 0;
+        if (screenY < 0) this.screenY = 0;
+        if (screenX > GameConstants.GAME_WORLD_WIDTH - GameConstants.GAME_SCREEN_WIDTH / 2.0f) {
+            screenX = GameConstants.GAME_WORLD_WIDTH - GameConstants.GAME_SCREEN_WIDTH / 2.0f;
         }
-        if(screenY > GameConstants.GAME_WORLD_HEIGHT-GameConstants.GAME_SCREEN_HEIGHT){
-            screenY = GameConstants.GAME_WORLD_HEIGHT-GameConstants.GAME_SCREEN_HEIGHT;
+        if (screenY > GameConstants.GAME_WORLD_HEIGHT - GameConstants.GAME_SCREEN_HEIGHT + GameConstants.HUD_SCREEN_HEIGHT) {
+            screenY = GameConstants.GAME_WORLD_HEIGHT - GameConstants.GAME_SCREEN_HEIGHT + GameConstants.HUD_SCREEN_HEIGHT;
         }
     }
 
@@ -149,16 +173,21 @@ public class Tank{
         return "x=" + x + ", y=" + y + ", angle=" + angle;
     }
 
-
-    void drawImage(Graphics g) {
+    @Override
+    public void drawImage(Graphics g) {
         AffineTransform rotation = AffineTransform.getTranslateInstance(x, y);
         rotation.rotate(Math.toRadians(angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
         Graphics2D g2d = (Graphics2D) g;
         g2d.drawImage(this.img, rotation, null);
         g2d.setColor(Color.RED);
-        //g2d.rotate(Math.toRadians(angle), bounds.x + bounds.width/2, bounds.y + bounds.height/2);
-        //g2d.drawRect((int)x,(int)y,this.img.getWidth(), this.img.getHeight());
-
+        centerScreen();
+        this.ammo.forEach(b->b.drawImage(g2d));
+        //cooldown timer for shots
+        g2d.setColor(Color.GREEN);
+        g2d.drawRect((int)x,(int)y-20,100,15);
+        long currentWidth = 100-((this.timeSinceLastShot + this.coolDown) - System.currentTimeMillis())/10;
+        if(currentWidth > 100) currentWidth = 100;
+        g2d.fillRect((int)x,(int)y-20, (int) currentWidth,15);
     }
 
     public float getScreenX() {
@@ -168,4 +197,5 @@ public class Tank{
     public float getScreenY() {
         return screenY;
     }
+
 }

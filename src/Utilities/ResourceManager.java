@@ -41,8 +41,8 @@ public class ResourceManager {
             ResourceManager.sprites.put("health",loadSprite("powerups/health.png"));
             ResourceManager.sprites.put("shield",loadSprite("powerups/shield.png"));
             ResourceManager.sprites.put("speed",loadSprite("powerups/speed.png"));
-            ResourceManager.sprites.put("tank1",loadSprite("tank/tank1.png"));
-            ResourceManager.sprites.put("tank2",loadSprite("tank/tank2.png"));
+            ResourceManager.sprites.put("tank1",loadSprite("Sprites-yak/TanksMRed.png"));
+            ResourceManager.sprites.put("tank2",loadSprite("Sprites-yak/TanksMBlue.png"));
             ResourceManager.sprites.put("break1",loadSprite("walls/break1.jpg"));
             ResourceManager.sprites.put("break2",loadSprite("walls/break2.jpg"));
             ResourceManager.sprites.put("unbreak",loadSprite("walls/unbreak.jpg"));
@@ -70,9 +70,5 @@ public class ResourceManager {
             throw new RuntimeException("%s is missing from sprite resources".formatted((type)));
         }
         return ResourceManager.sprites.get(type);
-    }
-
-    public static void main(String[] args) {
-        ResourceManager.initSprites();
     }
 }

@@ -3,9 +3,21 @@ package GameObjects;
 import Utilities.ResourceManager;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 
 public abstract class GameObject {
+    protected float x,y;
+    protected BufferedImage img;
+    protected Rectangle hitBox ;
+
+    public GameObject(float x, float y, BufferedImage img) {
+        this.x = x;
+        this.y = y;
+        this.img = img;
+        this.hitBox = new Rectangle((int)x,(int)y,this.img.getWidth(),this.img.getHeight());
+    }
+
     public static GameObject newInstance(String type, float x, float y){
         return switch (type){
             case "9", "3" -> new Wall(x,y, ResourceManager.getSprite("unbreak"));

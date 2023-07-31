@@ -1,6 +1,7 @@
 package Game;
 
 import GameObjects.GameObject;
+import Utilities.Hud;
 import Utilities.ResourceManager;
 import javax.swing.*;
 import java.awt.*;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * @author anthony-pc
@@ -20,6 +22,7 @@ public class GameWorld extends JPanel implements Runnable {
 
     private BufferedImage world;
     private Tank t1;
+    private Tank t2;
     private final Launcher lf;
     private long tick = 0;
     List<GameObject> gobjs = new ArrayList<>(1000);
@@ -37,6 +40,7 @@ public class GameWorld extends JPanel implements Runnable {
             while (true) {
                 this.tick++;
                 this.t1.update(); // update tank
+                this.t2.update();
                 this.repaint();   // redraw game
                 /*
                  * Sleep for 1000/144 ms (~6.9ms). This is done to have our 
@@ -87,24 +91,36 @@ public class GameWorld extends JPanel implements Runnable {
         t1 = new Tank(300, 300, 0, 0, (short) 0, ResourceManager.getSprite("tank1"));
         TankControl tc1 = new TankControl(t1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SPACE);
         this.lf.getJf().addKeyListener(tc1);
+        t2 = new Tank(300, 300, 0, 0, (short) 0, ResourceManager.getSprite("tank2"));
+        TankControl tc2 = new TankControl(t2, KeyEvent.VK_I, KeyEvent.VK_K, KeyEvent.VK_J, KeyEvent.VK_L, KeyEvent.VK_O);
+        this.lf.getJf().addKeyListener(tc2);
     }
     public void renderFloor(Graphics g){
-        for (int i = 0; i < GameConstants.GAME_SCREEN_WIDTH; i+=320) {
-            for (int j = 0; j < GameConstants.GAME_SCREEN_HEIGHT; j+=240){
+        for (int i = 0; i < GameConstants.GAME_WORLD_WIDTH; i+=320) {
+            for (int j = 0; j < GameConstants.GAME_WORLD_HEIGHT; j+=240){
                 g.drawImage(ResourceManager.getSprite("floor"),i,j,null);
             }
         }
     }
     public void renderMiniMap(Graphics2D g){
+        double scaleFactor = 0.2;
         BufferedImage mm = this.world.getSubimage(0,0,
                 GameConstants.GAME_WORLD_WIDTH,
                 GameConstants.GAME_WORLD_HEIGHT);
-        var mmX = GameConstants.GAME_SCREEN_WIDTH/2 - (GameConstants.GAME_WORLD_WIDTH*0.2)/2;
-        var mmY = GameConstants.GAME_SCREEN_HEIGHT - (GameConstants.GAME_WORLD_HEIGHT*0.2);
-        AffineTransform mmTransform = AffineTransform.getTranslateInstance(mmX,mmY-40);
-        mmTransform.scale(0.2,0.2);
-        g.drawImage(mm,mmTransform,null);
 
+        var mmX = GameConstants.GAME_SCREEN_WIDTH/2 - (GameConstants.GAME_WORLD_WIDTH*scaleFactor)/2;
+        //var mmY = GameConstants.GAME_SCREEN_HEIGHT - (GameConstants.GAME_WORLD_HEIGHT*0.2);
+        var mmY = GameConstants.GAME_SCREEN_HEIGHT - (GameConstants.GAME_WORLD_HEIGHT*scaleFactor);
+        AffineTransform mmTransform = AffineTransform.getTranslateInstance(mmX,mmY-32);
+        //0.005 is to account for the hud size compared to minimap scaling
+        mmTransform.scale(scaleFactor,scaleFactor-0.005);
+        g.drawImage(mm,mmTransform,null);
+    }
+    public void splitScreens(Graphics2D g2){
+        BufferedImage lhs = world.getSubimage((int)this.t1.getScreenX(),(int)this.t1.getScreenY(),GameConstants.GAME_SCREEN_WIDTH/2,GameConstants.GAME_SCREEN_HEIGHT-GameConstants.HUD_SCREEN_HEIGHT);
+        BufferedImage rhs = world.getSubimage((int)this.t2.getScreenX(),(int)this.t2.getScreenY(),GameConstants.GAME_SCREEN_WIDTH/2,GameConstants.GAME_SCREEN_HEIGHT-GameConstants.HUD_SCREEN_HEIGHT);
+        g2.drawImage(lhs, 0, 0, null);
+        g2.drawImage(rhs, GameConstants.GAME_SCREEN_WIDTH/2+1, 0, null);
     }
 
     @Override
@@ -112,10 +128,11 @@ public class GameWorld extends JPanel implements Runnable {
         Graphics2D g2 = (Graphics2D) g;
         Graphics2D buffer = world.createGraphics();
         renderFloor(buffer);
-        //buffer.drawImage(ResourceManager.getSprite("floor"),0,0,GameConstants.GAME_SCREEN_WIDTH,GameConstants.GAME_SCREEN_HEIGHT,null);
         this.gobjs.forEach(gameObject -> gameObject.drawImage(buffer));
         this.t1.drawImage(buffer);
-        g2.drawImage(world, 0, 0, null);
+        this.t2.drawImage(buffer);
+        splitScreens(g2);
+        Hud hud = new Hud(g2,this.world);
         renderMiniMap(g2);
     }
 }
