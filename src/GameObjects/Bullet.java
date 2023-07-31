@@ -26,6 +26,7 @@ public class Bullet extends GameObject {
         x += vx;
         y += vy;
         checkBorder();
+        this.hitBox.setLocation((int)x,(int)y);
     }
 
     private void checkBorder() {
@@ -55,6 +56,11 @@ public class Bullet extends GameObject {
         Graphics2D g2d = (Graphics2D) g;
         g2d.drawImage(this.img, rotation, null);
         g2d.setColor(Color.RED);
+    }
+
+    @Override
+    public void collides(GameObject with) {
+
     }
 
 }

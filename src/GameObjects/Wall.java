@@ -12,4 +12,9 @@ public class Wall extends GameObject {
     public void drawImage(Graphics buffer) {
         buffer.drawImage(this.img,(int)x,(int)y,null);
     }
+
+    @Override
+    public void collides(GameObject with) {
+
+    }
 }

@@ -28,6 +28,10 @@ public abstract class GameObject {
             default -> throw new UnsupportedOperationException();
         };
     }
+    public Rectangle getHitBox(){
+        return this.hitBox.getBounds();
+    }
     public abstract void drawImage(Graphics g);
 
+    public abstract void collides(GameObject with);
 }

@@ -1,7 +1,6 @@
 package Game;
 
-import GameObjects.Bullet;
-import GameObjects.GameObject;
+import GameObjects.*;
 import Utilities.ResourceManager;
 
 import java.awt.*;
@@ -113,6 +112,7 @@ public class Tank extends GameObject {
             this.ammo.add(new Bullet(x,y, ResourceManager.getSprite("bullet"),angle));
         }
         this.ammo.forEach(Bullet::update);
+        this.hitBox.setLocation((int)x,(int)y);
     }
 
     private void rotateLeft() {
@@ -190,6 +190,17 @@ public class Tank extends GameObject {
         g2d.fillRect((int)x,(int)y-20, (int) currentWidth,15);
     }
 
+    @Override
+    public void collides(GameObject with) {
+        if(with instanceof Bullet){
+            this.health--;
+        }else if(with instanceof Wall wall){
+            //stop
+        }else if(with instanceof PowerUps pw){
+            pw.applyPowerUp(this);
+        }
+    }
+
     public float getScreenX() {
         return screenX;
     }
@@ -198,4 +209,10 @@ public class Tank extends GameObject {
         return screenY;
     }
 
+    public void addHealth() {
+        if(!(this.health >= 10)){
+            this.health++;
+            System.out.println(health);
+        }
+    }
 }

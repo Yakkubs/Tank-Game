@@ -1,6 +1,8 @@
 package Game;
 
 import GameObjects.GameObject;
+import GameObjects.PowerUps;
+import GameObjects.Wall;
 import Utilities.Hud;
 import Utilities.ResourceManager;
 import javax.swing.*;
@@ -41,6 +43,7 @@ public class GameWorld extends JPanel implements Runnable {
                 this.tick++;
                 this.t1.update(); // update tank
                 this.t2.update();
+                this.checkCollision();
                 this.repaint();   // redraw game
                 /*
                  * Sleep for 1000/144 ms (~6.9ms). This is done to have our 
@@ -50,6 +53,20 @@ public class GameWorld extends JPanel implements Runnable {
             }
         } catch (InterruptedException ignored) {
             System.out.println(ignored);
+        }
+    }
+
+    private void checkCollision() {
+        for (int i = 0; i < this.gobjs.size(); i++) {
+            GameObject obj1 = this.gobjs.get(i);
+            if(obj1 instanceof Wall || obj1 instanceof PowerUps) continue;
+            for (int j = 0; j < this.gobjs.size(); j++) {
+                if(i==j) continue;
+                GameObject obj2 = this.gobjs.get(j);
+                if(obj1.getHitBox().intersects(obj2.getHitBox())){
+                    obj1.collides(obj2);
+                }
+            }
         }
     }
 
@@ -94,6 +111,7 @@ public class GameWorld extends JPanel implements Runnable {
         t2 = new Tank(300, 300, 0, 0, (short) 0, ResourceManager.getSprite("tank2"));
         TankControl tc2 = new TankControl(t2, KeyEvent.VK_I, KeyEvent.VK_K, KeyEvent.VK_J, KeyEvent.VK_L, KeyEvent.VK_O);
         this.lf.getJf().addKeyListener(tc2);
+        this.gobjs.add(t1);this.gobjs.add(t2);
     }
     public void renderFloor(Graphics g){
         for (int i = 0; i < GameConstants.GAME_WORLD_WIDTH; i+=320) {
