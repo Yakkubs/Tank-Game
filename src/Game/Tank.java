@@ -92,7 +92,7 @@ public class Tank extends GameObject {
         this.ShootPressed = false;
     }
 
-    void update() {
+    void update(GameWorld gw) {
         if (this.UpPressed) {
             this.moveForwards();
         }
@@ -110,7 +110,9 @@ public class Tank extends GameObject {
         }
         if (this.ShootPressed && ((this.timeSinceLastShot + this.coolDown) < System.currentTimeMillis())) {
             this.timeSinceLastShot = System.currentTimeMillis();
-            this.ammo.add(new Bullet(x,y, ResourceManager.getSprite("bullet"),angle));
+            Bullet b = new Bullet(x,y, ResourceManager.getSprite("bullet"),angle);
+            this.ammo.add(b);
+            gw.gobjs.add(b);
 
         }
         this.ammo.forEach(Bullet::update);
@@ -199,6 +201,7 @@ public class Tank extends GameObject {
             System.out.println(this.health);
         }else if(with instanceof Wall wall){
             //stop
+
         }else if(with instanceof PowerUps pw){
             pw.applyPowerUp(this);
         }

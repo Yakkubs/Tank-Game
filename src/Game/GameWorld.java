@@ -42,8 +42,8 @@ public class GameWorld extends JPanel implements Runnable {
         try {
             while (true) {
                 this.tick++;
-                this.t1.update(); // update tank
-                this.t2.update();
+                this.t1.update(this); // update tank
+                this.t2.update(this);
                 this.checkCollision();
                 this.repaint();   // redraw game
                 /*

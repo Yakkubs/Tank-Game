@@ -12,6 +12,10 @@ import java.util.Objects;
 public class ResourceManager {
     private final static Map<String, BufferedImage> sprites = new HashMap<>();
     private final static HashMap<String, List<BufferedImage >> animations = new HashMap<>();
+    private static final Map<String,Integer> animationInfo = new HashMap<>(){{
+                put("bullethit",24);
+                put("bulletShoot",24);
+    }};
     private final static HashMap<String, Clip> sounds = new HashMap<>();
 
     private static BufferedImage loadSprite(String path) throws IOException {
@@ -27,8 +31,8 @@ public class ResourceManager {
     }
     //temp animation load animation function, thinking about using frame count as loop condition loop and add each file
     //into a list and return it, i would probably need another parameter for the path to get this to work
-    private static List<BufferedImage> loadAnimations(int frameCount){
-        return null;
+    private static void initAnimations(int frameCount){
+
     }
 
     private static void initSprites(){

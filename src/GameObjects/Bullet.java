@@ -61,7 +61,9 @@ public class Bullet extends GameObject {
 
     @Override
     public void collides(GameObject with) {
-
+        if( with instanceof Wall){
+            
+        }
     }
 
 }
