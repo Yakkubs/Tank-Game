@@ -13,14 +13,20 @@ public class Shield extends GameObject implements PowerUps {
 
     @Override
     public void drawImage(Graphics buffer) {
-        buffer.drawImage(this.img,(int)x,(int)y,null);
+        if(!hasCollided) {
+            buffer.drawImage(this.img, (int) x, (int) y, null);
+        }
     }
 
     @Override
     public void collides(GameObject with) {
-
+        if(with instanceof Tank) {
+            this.hasCollided = true;
+        }
     }
-    public void applyPowerUp(Tank tank) {
 
+    public void applyPowerUp(Tank tank) {
+        tank.setArmor();
+        collides(tank);
     }
 }

@@ -3,6 +3,7 @@ package GameObjects;
 
 import Game.GameConstants;
 import Game.GameWorld;
+import Game.Tank;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -13,12 +14,14 @@ public class Bullet extends GameObject {
     private float vy;
     private float angle;
     private float R = 5;
+    public int tankID;
 
-    public Bullet(float x, float y, BufferedImage img, float angle) {
+    public Bullet(float x, float y, BufferedImage img, float angle, int tankId) {
         super(x,y,img);
         this.vx = 0;
         this.vy = 0;
         this.angle = angle;
+        this.tankID = tankId;
     }
 
     public void update() {
@@ -31,17 +34,17 @@ public class Bullet extends GameObject {
     }
 
     private void checkBorder() {
-        if (x < 30) {
-            x = 30;
+        if (x < 20) {
+            x = 20;
         }
-        if (x >= GameConstants.GAME_WORLD_WIDTH - 40) {
-            x = GameConstants.GAME_WORLD_WIDTH - 40;
+        if (x >= GameConstants.GAME_WORLD_WIDTH - 20) {
+            x = GameConstants.GAME_WORLD_WIDTH - 20;
         }
-        if (y < 30) {
-            y = 30;
+        if (y < 20) {
+            y = 20;
         }
-        if (y >= GameConstants.GAME_WORLD_HEIGHT - 40) {
-            y = GameConstants.GAME_WORLD_HEIGHT - 40;
+        if (y >= GameConstants.GAME_WORLD_HEIGHT - 20) {
+            y = GameConstants.GAME_WORLD_HEIGHT - 20;
         }
     }
 
@@ -52,17 +55,21 @@ public class Bullet extends GameObject {
 
 
     public void drawImage(Graphics g) {
-        AffineTransform rotation = AffineTransform.getTranslateInstance(x, y);
-        rotation.rotate(Math.toRadians(angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
-        Graphics2D g2d = (Graphics2D) g;
-        g2d.drawImage(this.img, rotation, null);
-        g2d.setColor(Color.RED);
+        if(!hasCollided) {
+            AffineTransform rotation = AffineTransform.getTranslateInstance(x, y);
+            rotation.rotate(Math.toRadians(angle), this.img.getWidth() / 2.0, this.img.getHeight() / 2.0);
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.drawImage(this.img, rotation, null);
+            g2d.setColor(Color.RED);
+        }
     }
 
     @Override
     public void collides(GameObject with) {
         if( with instanceof Wall){
-            
+            this.hasCollided = true;
+        }else if(with instanceof Tank && ((Tank) with).id != tankID){
+            this.hasCollided = true;
         }
     }
 

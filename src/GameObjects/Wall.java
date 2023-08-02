@@ -15,6 +15,7 @@ public class Wall extends GameObject {
 
     @Override
     public void collides(GameObject with) {
-
+        hasCollided = true;
     }
+
 }

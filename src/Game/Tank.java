@@ -1,6 +1,7 @@
 package Game;
 
 import GameObjects.*;
+import Utilities.Animation;
 import Utilities.ResourceManager;
 
 import java.awt.*;
@@ -14,34 +15,37 @@ import java.util.List;
  * @author anthony-pc
  */
 public class Tank extends GameObject {
-
     private float screenX;
     private float screenY;
     private float vx;
     private float vy;
     private float angle;
+    public int id;
     private List<Bullet> ammo = new ArrayList<Bullet>();
     long timeSinceLastShot = 0L;
-    long coolDown = 1000;
-    private int health;
-    private int armor;
-    private int bulletDamage;
-    private float R = 5;
+    long coolDown = 500;
+    private int lifeCount;
+    private float health;
+    private float armor;
+    private float bulletDamage;
+    private float R = 2;
     private float ROTATIONSPEED = 3.0f;
-
     private boolean UpPressed;
     private boolean DownPressed;
     private boolean RightPressed;
     private boolean LeftPressed;
     private boolean ShootPressed;
 
-    Tank(float x, float y, float vx, float vy, float angle, BufferedImage img) {
+    Tank(float x, float y, float vx, float vy, float angle, BufferedImage img, int id) {
         super(x,y,img);
         this.vx = vx;
         this.vy = vy;
         this.angle = angle;
-        this.health = 5;
+        this.health = 10;
         this.armor = 0;
+        this.id = id;
+        this.lifeCount = 5;
+        this.bulletDamage = 2;
     }
 
     void setX(float x) {
@@ -110,10 +114,9 @@ public class Tank extends GameObject {
         }
         if (this.ShootPressed && ((this.timeSinceLastShot + this.coolDown) < System.currentTimeMillis())) {
             this.timeSinceLastShot = System.currentTimeMillis();
-            Bullet b = new Bullet(x,y, ResourceManager.getSprite("bullet"),angle);
+            Bullet b = new Bullet(x+50,y+23, ResourceManager.getSprite("bullet"),angle,id);
             this.ammo.add(b);
             gw.gobjs.add(b);
-
         }
         this.ammo.forEach(Bullet::update);
         this.hitBox.setLocation((int)x,(int)y);
@@ -196,11 +199,21 @@ public class Tank extends GameObject {
 
     @Override
     public void collides(GameObject with) {
-        if(with instanceof Bullet){
-            this.health--;
-            System.out.println(this.health);
-        }else if(with instanceof Wall wall){
-            //stop
+        if(with instanceof Bullet b && id != ((Bullet) with).tankID){
+            float dmg = bulletDamage - armor;
+            if(dmg <= 0) {
+                dmg = 1;
+            }
+            addHealth(-dmg);
+            this.ammo.remove(b);
+        }else if(with instanceof Wall){
+            if(UpPressed){
+                y = y - vy;
+                x = x - vx;
+            }else if(DownPressed){
+                y = y + vy;
+                x = x + vx;
+            }
 
         }else if(with instanceof PowerUps pw){
             pw.applyPowerUp(this);
@@ -215,10 +228,44 @@ public class Tank extends GameObject {
         return screenY;
     }
 
-    public void addHealth() {
-        if(!(this.health >= 10)){
-            this.health++;
-            System.out.println(health);
+    public int getLifeCount(){
+        return lifeCount;
+    }
+
+    public void addHealth(float val) {
+        if(!(this.health >= 20) && !(this.health+val >= 20)){
+            this.health += val;
+        }else{
+            this.health = 20;
+        }
+        if(this.health <= 0){
+            this.lifeCount--;
+            this.health = 10;
         }
     }
+    public float getHealth(){
+        return this.health;
+    }
+
+    public void setArmor() {
+        this.armor++;
+    }
+    public float getArmor(){
+        return this.armor;
+    }
+    public void setSpeed() {
+        if(!(this.R >= 5)) {
+            this.R++;
+        }
+    }
+    public float getSpeed(){
+        return this.R;
+    }
+    public void addDamage(){
+        this.bulletDamage++;
+    }
+    public float getBulletDamage(){
+        return this.bulletDamage;
+    }
+
 }

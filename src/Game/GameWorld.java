@@ -4,6 +4,7 @@ import GameObjects.Bullet;
 import GameObjects.GameObject;
 import GameObjects.PowerUps;
 import GameObjects.Wall;
+import Utilities.Animation;
 import Utilities.Hud;
 import Utilities.ResourceManager;
 import javax.swing.*;
@@ -28,6 +29,7 @@ public class GameWorld extends JPanel implements Runnable {
     private final Launcher lf;
     private long tick = 0;
     List<GameObject> gobjs = new ArrayList<>(1000);
+    List<Animation> anims = new ArrayList<>();
 
     /**
      *
@@ -44,7 +46,9 @@ public class GameWorld extends JPanel implements Runnable {
                 this.tick++;
                 this.t1.update(this); // update tank
                 this.t2.update(this);
+                this.anims.forEach(animation -> animation.update());
                 this.checkCollision();
+                this.gobjs.removeIf(GameObject::hasCollided);
                 this.repaint();   // redraw game
                 /*
                  * Sleep for 1000/144 ms (~6.9ms). This is done to have our 
@@ -90,6 +94,12 @@ public class GameWorld extends JPanel implements Runnable {
                 BufferedImage.TYPE_INT_RGB);
 
         InputStreamReader isr = new InputStreamReader(ResourceManager.class.getClassLoader().getResourceAsStream("maps/map1.csv"));
+//        this.anims.add(new Animation(300,300,ResourceManager.getAnimation("bullethit")));
+//        this.anims.add(new Animation(350,300,ResourceManager.getAnimation("bulletshoot")));
+//        this.anims.add(new Animation(400,300,ResourceManager.getAnimation("powerpick")));
+//        this.anims.add(new Animation(450,300,ResourceManager.getAnimation("puffsmoke")));
+//        this.anims.add(new Animation(500,300,ResourceManager.getAnimation("rocketflame")));
+//        this.anims.add(new Animation(550,300,ResourceManager.getAnimation("rockethit")));
         try(BufferedReader mapReader = new BufferedReader(isr)) {
             int row = 0;
             String[] gameItems;
@@ -106,10 +116,10 @@ public class GameWorld extends JPanel implements Runnable {
             throw new RuntimeException(e);
         }
 
-        t1 = new Tank(300, 300, 0, 0, (short) 0, ResourceManager.getSprite("tank1"));
+        t1 = new Tank(300, 300, 0, 0, (short) 0, ResourceManager.getSprite("tank1"),1);
         TankControl tc1 = new TankControl(t1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SPACE);
         this.lf.getJf().addKeyListener(tc1);
-        t2 = new Tank(300, 300, 0, 0, (short) 0, ResourceManager.getSprite("tank2"));
+        t2 = new Tank(300, 300, 0, 0, (short) 0, ResourceManager.getSprite("tank2"),2);
         TankControl tc2 = new TankControl(t2, KeyEvent.VK_I, KeyEvent.VK_K, KeyEvent.VK_J, KeyEvent.VK_L, KeyEvent.VK_O);
         this.lf.getJf().addKeyListener(tc2);
         this.gobjs.add(t1);this.gobjs.add(t2);
@@ -130,7 +140,7 @@ public class GameWorld extends JPanel implements Runnable {
         var mmX = GameConstants.GAME_SCREEN_WIDTH/2 - (GameConstants.GAME_WORLD_WIDTH*scaleFactor)/2;
         //var mmY = GameConstants.GAME_SCREEN_HEIGHT - (GameConstants.GAME_WORLD_HEIGHT*0.2);
         var mmY = GameConstants.GAME_SCREEN_HEIGHT - (GameConstants.GAME_WORLD_HEIGHT*scaleFactor);
-        AffineTransform mmTransform = AffineTransform.getTranslateInstance(mmX,mmY-32);
+        AffineTransform mmTransform = AffineTransform.getTranslateInstance(mmX-8,mmY-32);
         //0.005 is to account for the hud size compared to minimap scaling
         mmTransform.scale(scaleFactor,scaleFactor-0.005);
         g.drawImage(mm,mmTransform,null);
@@ -150,9 +160,11 @@ public class GameWorld extends JPanel implements Runnable {
         this.gobjs.forEach(gameObject -> gameObject.drawImage(buffer));
         this.t1.drawImage(buffer);
         this.t2.drawImage(buffer);
+        this.anims.forEach(animation -> animation.drawImage(buffer));
         splitScreens(g2);
-        Hud p1Hud = new Hud(g2,this.world,0,Color.RED);
-        Hud p2Hud = new Hud(g2,this.world,GameConstants.GAME_SCREEN_WIDTH-447,Color.BLUE);
+        Hud p1Hud = new Hud();
+        p1Hud.createHud(g2,t1,t2);
+
         renderMiniMap(g2);
     }
 }
