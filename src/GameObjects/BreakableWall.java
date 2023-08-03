@@ -13,11 +13,12 @@ public class BreakableWall extends Wall {
     @Override
     public void collides(GameObject with) {
         if(with instanceof Bullet){
-            if(health > 0){
-                hasCollided = true;
+            if(health <= 0){
+                this.hasCollided = true;
+            }else {
+                this.health--;
+                this.img = ResourceManager.getSprite("break2");
             }
-            health--;
-            this.img = ResourceManager.getSprite("break2");
         }
     }
     public void drawImage(Graphics buffer) {

@@ -15,13 +15,15 @@ public class Bullet extends GameObject {
     private float angle;
     private float R = 5;
     public int tankID;
+    public float bulletDamage;
 
-    public Bullet(float x, float y, BufferedImage img, float angle, int tankId) {
+    public Bullet(float x, float y, BufferedImage img, float angle, int tankId,float bulletDamage) {
         super(x,y,img);
         this.vx = 0;
         this.vy = 0;
         this.angle = angle;
         this.tankID = tankId;
+        this.bulletDamage = bulletDamage;
     }
 
     public void update() {
@@ -66,7 +68,8 @@ public class Bullet extends GameObject {
 
     @Override
     public void collides(GameObject with) {
-        if( with instanceof Wall){
+        if( with instanceof Wall w){
+            w.collides(this);
             this.hasCollided = true;
         }else if(with instanceof Tank && ((Tank) with).id != tankID){
             this.hasCollided = true;

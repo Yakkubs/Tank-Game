@@ -28,6 +28,7 @@ public class GameWorld extends JPanel implements Runnable {
     private Tank t2;
     private final Launcher lf;
     private long tick = 0;
+    private boolean winner = false;
     List<GameObject> gobjs = new ArrayList<>(1000);
     List<Animation> anims = new ArrayList<>();
 
@@ -42,6 +43,7 @@ public class GameWorld extends JPanel implements Runnable {
     @Override
     public void run() {
         try {
+            this.resetGame();
             while (true) {
                 this.tick++;
                 this.t1.update(this); // update tank
@@ -54,6 +56,10 @@ public class GameWorld extends JPanel implements Runnable {
                  * Sleep for 1000/144 ms (~6.9ms). This is done to have our 
                  * loop run at a fixed rate per/sec. 
                 */
+                if(this.tick % 720 == 0){
+                    this.lf.setFrame("end");
+                    return;
+                }
                 Thread.sleep(1000 / 144);
             }
         } catch (InterruptedException ignored) {

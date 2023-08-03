@@ -114,7 +114,7 @@ public class Tank extends GameObject {
         }
         if (this.ShootPressed && ((this.timeSinceLastShot + this.coolDown) < System.currentTimeMillis())) {
             this.timeSinceLastShot = System.currentTimeMillis();
-            Bullet b = new Bullet(x+50,y+23, ResourceManager.getSprite("bullet"),angle,id);
+            Bullet b = new Bullet(x+50,y+23, ResourceManager.getSprite("bullet"),angle,id,bulletDamage);
             this.ammo.add(b);
             gw.gobjs.add(b);
         }
@@ -200,7 +200,7 @@ public class Tank extends GameObject {
     @Override
     public void collides(GameObject with) {
         if(with instanceof Bullet b && id != ((Bullet) with).tankID){
-            float dmg = bulletDamage - armor;
+            float dmg = b.bulletDamage - armor;
             if(dmg <= 0) {
                 dmg = 1;
             }
