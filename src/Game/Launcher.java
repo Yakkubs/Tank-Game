@@ -2,6 +2,8 @@ package Game;
 
 import Menus.EndGamePanel;
 import Menus.StartMenuPanel;
+import Menus.WinnerPanel1;
+import Menus.WinnerPanel2;
 import Utilities.ResourceManager;
 
 import javax.swing.*;
@@ -56,12 +58,18 @@ public class Launcher {
          * end panel is used to show the end game panel.  it will contain
          * two buttons restart and exit.
          */
-        JPanel endPanel = new EndGamePanel(this); // create a new end game pane;
+        JPanel winnerPanel1 = new WinnerPanel1(this);
+        JPanel winnerPanel2 = new WinnerPanel2(this);
+
+        JPanel endPanel = new EndGamePanel(this);
+
         cl = new CardLayout(); // creating a new CardLayout Panel
         this.mainPanel.setLayout(cl); // set the layout of the main panel to our card layout
         this.mainPanel.add(startPanel, "start"); //add the start panel to the main panel
         this.mainPanel.add(gamePanel, "game");   //add the game panel to the main panel
-        this.mainPanel.add(endPanel, "end");    // add the end game panel to the main panel
+        this.mainPanel.add(winnerPanel1,"winner1");
+        this.mainPanel.add(winnerPanel2,"winner2");
+        this.mainPanel.add(endPanel,"end");
         this.jf.add(mainPanel); // add the main panel to the JFrame
         this.jf.setResizable(false); //make the JFrame not resizable
         this.setFrame("start"); // set the current panel to start panel
@@ -79,6 +87,9 @@ public class Launcher {
                 //start a new thread for the game to run. This will ensure our JFrame is responsive and
                 // not stuck executing the game loop.
                 (new Thread(this.gamePanel)).start();
+            }
+            case "winner1","winner2" -> {
+                this.jf.setSize(GameConstants.START_MENU_SCREEN_WIDTH, GameConstants.START_MENU_SCREEN_HEIGHT);
             }
             case "end" ->
                 // set the size of the jFrame to the expected size for the end panel

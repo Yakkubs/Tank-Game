@@ -20,13 +20,17 @@ public class Shield extends GameObject implements PowerUps {
 
     @Override
     public void collides(GameObject with) {
-        if(with instanceof Tank) {
+        if(with instanceof Tank t && t.getArmor() <= 4) {
             this.hasCollided = true;
         }
     }
 
-    public void applyPowerUp(Tank tank) {
-        tank.setArmor();
-        collides(tank);
+    public boolean applyPowerUp(Tank tank) {
+        if(tank.getArmor() < 4){
+            tank.setArmor();
+            collides(tank);
+            return true;
+        }
+        return false;
     }
 }

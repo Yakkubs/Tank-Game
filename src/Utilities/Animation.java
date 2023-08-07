@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 public class Animation {
-    float x,y;
+    private float x,y;
     private List<BufferedImage> frames;
     private long timeSinceUpdate = 0;
     private long delay = 60;
@@ -22,16 +22,19 @@ public class Animation {
         if(timeSinceUpdate + delay < System.currentTimeMillis()){
             this.timeSinceUpdate = System.currentTimeMillis();
             this.currentFrame++;
-            this.currentFrame = (currentFrame + 1) % this.frames.size();
-//            if(this.currentFrame == this.frames.size()){
-//                isRunning = false;
-//            }
+            if(currentFrame == this.frames.size()){
+                isRunning = false;
+            }
+//            this.currentFrame = (currentFrame + 1) % this.frames.size();
         }
     }
     public void drawImage(Graphics2D g){
         if(isRunning){
             g.drawImage(this.frames.get(currentFrame), (int) x, (int) y,null);
         }
+    }
+    public void setDelay(long delay){
+        this.delay = delay;
     }
 
 }

@@ -23,9 +23,13 @@ public class Speed extends GameObject implements PowerUps {
     }
 
     @Override
-    public void applyPowerUp(Tank tank) {
-        tank.setSpeed();
-        collides(tank);
+    public boolean applyPowerUp(Tank tank) {
+        if(tank.getSpeed() <= 5) {
+            tank.setSpeed();
+            collides(tank);
+            return true;
+        }
+        return false;
     }
 
 }

@@ -10,8 +10,14 @@ import java.awt.image.BufferedImage;
 public class Hud {
     private Tank tank1;
     private Tank tank2;
-    private float scaleFactor = .90F;
-    private int borderWidth = 439;
+    private Graphics2D g2d;
+
+    public Hud(Graphics2D g2d,Tank tank1,Tank tank2) {
+        this.tank1 = tank1;
+        this.tank2 = tank2;
+        this.g2d = g2d;
+    }
+
 
 //    public Hud(Graphics2D g2d, BufferedImage world,int x,Color color){
 //        g2d.setColor(Color.BLACK);
@@ -33,34 +39,63 @@ public class Hud {
 ////        g.drawImage(mm,mmTransform,null);
 //
 //    }
-    public void drawStats(Graphics g2d,Tank t1,int pos){
-        g2d.drawString("LifeCount: "+ t1.getLifeCount(),pos,GameConstants.GAME_SCREEN_HEIGHT-GameConstants.HUD_SCREEN_HEIGHT+30);
-        g2d.drawString("Health: "   + t1.getHealth(),pos,GameConstants.GAME_SCREEN_HEIGHT-GameConstants.HUD_SCREEN_HEIGHT+60);
-        g2d.drawString("Armor: "    + t1.getArmor(),pos,GameConstants.GAME_SCREEN_HEIGHT-GameConstants.HUD_SCREEN_HEIGHT+90);
-        g2d.drawString("Speed "     + t1.getSpeed(),pos,GameConstants.GAME_SCREEN_HEIGHT-GameConstants.HUD_SCREEN_HEIGHT+120);
-        g2d.drawString("Damage "    + t1.getBulletDamage(),pos,GameConstants.GAME_SCREEN_HEIGHT-GameConstants.HUD_SCREEN_HEIGHT+150);
+    public void drawBulletCooldown(Tank tank,int pos,int y){
+        g2d.setColor(Color.WHITE);
+        g2d.drawRect(pos,y+25,200,5);
+        g2d.setColor(Color.orange);
+        long currentWidth = (long) (200-((tank.getCoolDown()) - System.currentTimeMillis())/2.5);
+        if(currentWidth > 200) currentWidth = 200;
+        g2d.fillRect(pos,y+25, (int) currentWidth,5);
     }
-    public void createHud(Graphics g2d,Tank tank1, Tank tank2){
+    //still needs work
+    public void drawLifeBar(Tank tank, int pos, int y) {
+        g2d.setColor(Color.WHITE);
+        g2d.drawRect(pos, y + 25, 200, 15);
+        g2d.setColor(Color.GREEN);
+        float currentWidth = (tank.getHealth()/ tank.getHealthCap()) * 200;
+        g2d.fillRect(pos, y + 25, (int) currentWidth, 15);
+    }
+
+    public void drawLifeCount(Tank tank,int pos,int y){
+        //hard coded max value for life count since i dont have any power up that adds lives
+        for (int i = 0; i < 5; i++) {
+            g2d.setColor(Color.WHITE);
+            g2d.drawOval(pos+(i*20),y,15,15);
+        }
+        for (int i = 0; i < tank.getLifeCount(); i++) {
+            g2d.setColor(Color.RED);
+            g2d.fillOval(pos+(i*20),y,15,15);
+        }
+    }
+
+    public void drawStats(Tank tank, int pos){
+        int yCord = GameConstants.GAME_SCREEN_HEIGHT-GameConstants.HUD_SCREEN_HEIGHT;
+        g2d.drawString("Player " + tank.id,pos,yCord+40);
+        drawBulletCooldown(tank,pos+125,yCord-5);
+        drawLifeBar(tank,pos+125,yCord);
+        drawLifeCount(tank,pos+125,yCord+40);
+        g2d.setColor(Color.WHITE);
+        g2d.drawString(String.format("%-20s : %10d", "LifeCount", tank.getLifeCount()), pos, yCord + 210);
+        g2d.drawString(String.format("%-22s : %10d", "Health", tank.getHealth()), pos, yCord + 90);
+        g2d.drawString(String.format("%-21s : %10d", "Armor", tank.getArmor()), pos, yCord + 120);
+        g2d.drawString(String.format("%-22s : %10d", "Speed", (int) tank.getSpeed()), pos, yCord + 150);
+        g2d.drawString(String.format("%-20s : %10d", "Damage", tank.getBulletDamage()), pos, yCord + 180);
+    }
+    public void createHud(){
+        int borderWidth = 439;
         //creating all black outer rectangle for hud background
         g2d.setColor(Color.BLACK);
-        g2d.fillRect(0, (int) (GameConstants.GAME_SCREEN_HEIGHT*(2/3.0)),GameConstants.HUD_SCREEN_WIDTH-15,GameConstants.HUD_SCREEN_HEIGHT-40);
+        g2d.fillRect(0, (int) (GameConstants.GAME_SCREEN_HEIGHT*(2/3.0)),GameConstants.HUD_SCREEN_WIDTH-15,GameConstants.HUD_SCREEN_HEIGHT-38);
         //creating border for hud
         g2d.setColor(Color.RED);
-        g2d.drawRect(0, (int) (GameConstants.GAME_SCREEN_HEIGHT*(2/3.0)),borderWidth,GameConstants.HUD_SCREEN_HEIGHT-40);
+        g2d.drawRect(5, (int) (GameConstants.GAME_SCREEN_HEIGHT*(2/3.0))+5,borderWidth-10,GameConstants.HUD_SCREEN_HEIGHT-40-10);
         g2d.setColor(Color.BLUE);
-        g2d.drawRect(GameConstants.GAME_SCREEN_WIDTH-456, (int) (GameConstants.GAME_SCREEN_HEIGHT*(2/3.0)),borderWidth,GameConstants.HUD_SCREEN_HEIGHT-40);
-        //bullet cool down
-//        g2d.drawRect(100,GameConstants.GAME_SCREEN_HEIGHT-GameConstants.HUD_SCREEN_HEIGHT+100,100,15);
-//        g2d.setColor(Color.GREEN);
-//        long currentWidth = 100-((tank1.timeSinceLastShot + tank1.coolDown) - System.currentTimeMillis())/10;
-//        if(currentWidth > 100) currentWidth = 100;
-//        g2d.fillRect(100,GameConstants.GAME_SCREEN_HEIGHT-GameConstants.HUD_SCREEN_HEIGHT+100, (int) currentWidth,15);
-        Font font = new Font(Font.SERIF, Font.BOLD,30);
+        g2d.drawRect(5+GameConstants.GAME_SCREEN_WIDTH-456, (int) (GameConstants.GAME_SCREEN_HEIGHT*(2/3.0))+5,borderWidth-10,GameConstants.HUD_SCREEN_HEIGHT-40-10);
+        Font font = new Font(Font.SERIF, Font.PLAIN,20);
         g2d.setFont(font);
         g2d.setColor(Color.WHITE);
-        //g2d.drawString("Health:",10,GameConstants.GAME_SCREEN_HEIGHT-GameConstants.HUD_SCREEN_HEIGHT+30);
-        drawStats(g2d,tank1,10);
-        drawStats(g2d,tank2,10+GameConstants.GAME_SCREEN_WIDTH-456);
+        drawStats(tank1,40);
+        drawStats(tank2,40+GameConstants.GAME_SCREEN_WIDTH-456);
 
     }
 }

@@ -2,12 +2,9 @@ package Menus;
 
 import Game.Launcher;
 import Utilities.ResourceManager;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 
 public class EndGamePanel extends JPanel {
 

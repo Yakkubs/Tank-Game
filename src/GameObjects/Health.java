@@ -22,8 +22,12 @@ public class Health extends GameObject implements PowerUps {
         this.hasCollided = true;
     }
     @Override
-    public void applyPowerUp(Tank tank) {
-        tank.addHealth(5);
-        collides(tank);
+    public boolean applyPowerUp(Tank tank) {
+        if(tank.getHealth() < 20) {
+            tank.addHealth(5);
+            collides(tank);
+            return true;
+        }
+        return false;
     }
 }

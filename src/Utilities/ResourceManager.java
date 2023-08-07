@@ -8,7 +8,7 @@ import java.util.*;
 
 public class ResourceManager {
     private final static Map<String, BufferedImage> sprites = new HashMap<>();
-    private final static HashMap<String, Clip> sounds = new HashMap<>();
+    private final static HashMap<String, Sound> sound = new HashMap<>();
     private final static HashMap<String, List<BufferedImage >> animations = new HashMap<>();
     private static final Map<String,Integer> animationInfo = new HashMap<>(){{
                 put("bullethit",24);
@@ -22,13 +22,13 @@ public class ResourceManager {
     private static BufferedImage loadSprite(String path) throws IOException {
         return ImageIO.read(Objects.requireNonNull(ResourceManager.class.getClassLoader().getResource(path)));
     }
-    private static Clip loadSound(String path) throws IOException {
-        try {
-            AudioInputStream is = AudioSystem.getAudioInputStream(Objects.requireNonNull(ResourceManager.class.getClassLoader().getResource(path)));
-            return AudioSystem.getClip();
-        } catch (UnsupportedAudioFileException | LineUnavailableException e) {
-            throw new RuntimeException(e);
-        }
+    private static Sound loadSound(String path) throws IOException, UnsupportedAudioFileException, LineUnavailableException {
+        AudioInputStream ais = AudioSystem.getAudioInputStream(Objects.requireNonNull(ResourceManager.class.getClassLoader().getResource(path)));
+        Clip c = AudioSystem.getClip();
+        c.open(ais);
+        Sound s = new Sound(c);
+        s.setVolume(.2f);
+        return s;
     }
     private static void initAnimations(){
         animationInfo.forEach((animationName,frameCount)-> {
@@ -47,9 +47,17 @@ public class ResourceManager {
         });
     }
     public static List<BufferedImage> getAnimation(String type){
+        if(!ResourceManager.animations.containsKey(type)){
+            throw new RuntimeException("%s resource is missing.".formatted(type));
+        }
         return ResourceManager.animations.get(type);
     }
-
+    public static Sound getSound(String type){
+        if(!ResourceManager.sound.containsKey(type)){
+            throw new RuntimeException("%s resource is missing.".formatted(type));
+        }
+        return ResourceManager.sound.get(type);
+    }
     private static void initSprites(){
         try {
             ResourceManager.sprites.put("bullet",loadSprite("bullet/bullet.jpg"));
@@ -57,33 +65,38 @@ public class ResourceManager {
             ResourceManager.sprites.put("rocket2",loadSprite("bullet/rocket2.png"));
             ResourceManager.sprites.put("floor",loadSprite("floor/bg.bmp"));
             ResourceManager.sprites.put("menu", loadSprite("menu/title.png"));
+            ResourceManager.sprites.put("winner1", loadSprite("menu/Winner1.png"));
+            ResourceManager.sprites.put("winner2", loadSprite("menu/Winner2.png"));
             ResourceManager.sprites.put("health",loadSprite("powerups/health.png"));
             ResourceManager.sprites.put("shield",loadSprite("powerups/shield.png"));
             ResourceManager.sprites.put("speed",loadSprite("powerups/speed.png"));
             ResourceManager.sprites.put("damage",loadSprite("powerups/damage.png"));
             ResourceManager.sprites.put("tank1",loadSprite("Sprites-yak/TanksMRed.png"));
             ResourceManager.sprites.put("tank2",loadSprite("Sprites-yak/TanksMBlue.png"));
-            ResourceManager.sprites.put("break1",loadSprite("walls/break1.jpg"));
-            ResourceManager.sprites.put("break2",loadSprite("walls/break2.jpg"));
-            ResourceManager.sprites.put("unbreak",loadSprite("walls/unbreak.jpg"));
-
-
-
-            //skipping past some sounds for the time being
-            ResourceManager.sounds.put("bullet",loadSound("Sounds/bullet.wav"));
-            //doesnt work for mp3 file types yet
-            //ResourceManager.sounds.put("Music",loadSound("Sounds/Music.mp3"));
-
-            //skipping past animations for the time being
-
-
+            ResourceManager.sprites.put("break1",loadSprite("walls/Castle_Wall.jpg"));
+            ResourceManager.sprites.put("break2",loadSprite("walls/Moon_Rock.jpg"));
+            ResourceManager.sprites.put("unbreak",loadSprite("walls/Black_Brick.jpg"));
+            ResourceManager.sprites.put("random",loadSprite("walls/Random_Block.jpg"));
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+    private static void initSounds(){
+        try {
+            ResourceManager.sound.put("bullet_shoot", loadSound("Sounds/bullet_shoot.wav"));
+            ResourceManager.sound.put("explosion", loadSound("Sounds/explosion.wav"));
+            ResourceManager.sound.put("bg", loadSound("Sounds/Music.mid"));
+            ResourceManager.sound.put("pickup", loadSound("Sounds/pickup.wav"));
+            ResourceManager.sound.put("shotfire", loadSound("Sounds/shotfiring.wav"));
+            ResourceManager.sound.put("shotexplosion", loadSound("Sounds/shotexplosion.wav"));
+        }catch(Exception e){
+            System.out.println(e);
         }
     }
     public static void loadResources(){
         ResourceManager.initSprites();
         ResourceManager.initAnimations();
+        ResourceManager.initSounds();
     }
 
     public static BufferedImage getSprite(String type) {

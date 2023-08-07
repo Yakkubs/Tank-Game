@@ -1,12 +1,11 @@
 package Game;
 
-import GameObjects.Bullet;
-import GameObjects.GameObject;
-import GameObjects.PowerUps;
-import GameObjects.Wall;
+import GameObjects.*;
 import Utilities.Animation;
 import Utilities.Hud;
 import Utilities.ResourceManager;
+import Utilities.Sound;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
@@ -15,6 +14,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,9 +28,11 @@ public class GameWorld extends JPanel implements Runnable {
     private Tank t2;
     private final Launcher lf;
     private long tick = 0;
-    private boolean winner = false;
+    private Sound bg = ResourceManager.getSound("bg");
     List<GameObject> gobjs = new ArrayList<>(1000);
-    List<Animation> anims = new ArrayList<>();
+    private List<Animation> anims = new ArrayList<>();
+    private boolean hasWon = false;
+
 
     /**
      *
@@ -42,28 +44,64 @@ public class GameWorld extends JPanel implements Runnable {
 
     @Override
     public void run() {
+        this.resetGame();
         try {
-            this.resetGame();
+            bg.setVolume(.2f);
+            bg.setLooping();
+            bg.playSound();
             while (true) {
                 this.tick++;
-                this.t1.update(this); // update tank
-                this.t2.update(this);
+                this.t1.update(); // update tank
+                this.t2.update();
                 this.anims.forEach(animation -> animation.update());
                 this.checkCollision();
+                this.checkDestroyedWalls();
                 this.gobjs.removeIf(GameObject::hasCollided);
                 this.repaint();   // redraw game
                 /*
                  * Sleep for 1000/144 ms (~6.9ms). This is done to have our 
                  * loop run at a fixed rate per/sec. 
                 */
-                if(this.tick % 720 == 0){
-                    this.lf.setFrame("end");
+
+                if (t2.getLifeCount() <= 0 ) {
+                    bg.stop();
+                    this.lf.setFrame("winner1");
+                    return;
+                } else if (t1.getLifeCount() <= 0) {
+                    bg.stop();
+                    this.lf.setFrame("winner2");
                     return;
                 }
                 Thread.sleep(1000 / 144);
             }
         } catch (InterruptedException ignored) {
             System.out.println(ignored);
+        }
+    }
+    public void checkDestroyedWalls() {
+        //finding all destroyed RandomDrop walls and adding them to a list
+        List<RandomDrop> destroyedWalls = new ArrayList<>();
+        for (GameObject obj : gobjs) {
+            if (obj instanceof RandomDrop r && obj.hasCollided()) {
+                destroyedWalls.add((RandomDrop) obj);
+            }
+        }
+        //iterating through the list to remove it from gobjs
+        for (RandomDrop wall : destroyedWalls) {
+            gobjs.remove(wall);
+            //random value from 4-7 that has a %20 chance to not be 0
+            double randomPowerUp = Math.random();
+            if (randomPowerUp < 0.2) {
+                randomPowerUp = (int) (Math.random() * 4) + 4;
+            }else{
+                randomPowerUp = (int)0;
+            }
+            //if value is not 0, spawn powerup at that location
+            if(randomPowerUp!=0){
+                GameObject randomPowerUp2 = GameObject.newInstance(String.valueOf((int)randomPowerUp), wall.getX(), wall.getY());
+                System.out.println("added new object");
+                gobjs.add(randomPowerUp2);
+            }
         }
     }
 
@@ -86,26 +124,22 @@ public class GameWorld extends JPanel implements Runnable {
      */
     public void resetGame() {
         this.tick = 0;
-        this.t1.setX(300);
-        this.t1.setY(300);
+        //clearing the gobjs list
+        this.gobjs.clear();
+        //reinitialize the map and tanks
+        initializeTanks();
+        this.t1.resetTank();
+        this.t2.resetTank();
+        this.createMap();
     }
 
     /**
      * Load all resources for Tank Wars Game. Set all Game Objects to their
      * initial state as well.
      */
-    public void InitializeGame() {
-        this.world = new BufferedImage(GameConstants.GAME_WORLD_WIDTH,
-                GameConstants.GAME_WORLD_HEIGHT,
-                BufferedImage.TYPE_INT_RGB);
-
+    public void createMap(){
+        //reading excel file to populate gobjs, which makes map, with gameobjects base on switch case value
         InputStreamReader isr = new InputStreamReader(ResourceManager.class.getClassLoader().getResourceAsStream("maps/map1.csv"));
-//        this.anims.add(new Animation(300,300,ResourceManager.getAnimation("bullethit")));
-//        this.anims.add(new Animation(350,300,ResourceManager.getAnimation("bulletshoot")));
-//        this.anims.add(new Animation(400,300,ResourceManager.getAnimation("powerpick")));
-//        this.anims.add(new Animation(450,300,ResourceManager.getAnimation("puffsmoke")));
-//        this.anims.add(new Animation(500,300,ResourceManager.getAnimation("rocketflame")));
-//        this.anims.add(new Animation(550,300,ResourceManager.getAnimation("rockethit")));
         try(BufferedReader mapReader = new BufferedReader(isr)) {
             int row = 0;
             String[] gameItems;
@@ -121,14 +155,27 @@ public class GameWorld extends JPanel implements Runnable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        t1 = new Tank(300, 300, 0, 0, (short) 0, ResourceManager.getSprite("tank1"),1);
+    }
+    public void initializeTanks(){
+        //hard coding tanks
+        t1 = new Tank(100, 100, 0, 0, (short) 0, ResourceManager.getSprite("tank1"),1,this);
         TankControl tc1 = new TankControl(t1, KeyEvent.VK_W, KeyEvent.VK_S, KeyEvent.VK_A, KeyEvent.VK_D, KeyEvent.VK_SPACE);
         this.lf.getJf().addKeyListener(tc1);
-        t2 = new Tank(300, 300, 0, 0, (short) 0, ResourceManager.getSprite("tank2"),2);
+        t2 = new Tank(GameConstants.GAME_WORLD_WIDTH-140, GameConstants.GAME_WORLD_HEIGHT-140, 0, 0, (short) 180, ResourceManager.getSprite("tank2"),2,this);
         TankControl tc2 = new TankControl(t2, KeyEvent.VK_I, KeyEvent.VK_K, KeyEvent.VK_J, KeyEvent.VK_L, KeyEvent.VK_O);
         this.lf.getJf().addKeyListener(tc2);
         this.gobjs.add(t1);this.gobjs.add(t2);
+    }
+    public void InitializeGame() {
+        this.world = new BufferedImage(GameConstants.GAME_WORLD_WIDTH,
+                GameConstants.GAME_WORLD_HEIGHT,
+                BufferedImage.TYPE_INT_RGB);
+
+        createMap();
+        initializeTanks();
+    }
+    public void addToAnims(Animation a){
+        anims.add(a);
     }
     public void renderFloor(Graphics g){
         for (int i = 0; i < GameConstants.GAME_WORLD_WIDTH; i+=320) {
@@ -168,9 +215,8 @@ public class GameWorld extends JPanel implements Runnable {
         this.t2.drawImage(buffer);
         this.anims.forEach(animation -> animation.drawImage(buffer));
         splitScreens(g2);
-        Hud p1Hud = new Hud();
-        p1Hud.createHud(g2,t1,t2);
-
+        Hud hud = new Hud(g2,t1,t2);
+        hud.createHud();
         renderMiniMap(g2);
     }
 }

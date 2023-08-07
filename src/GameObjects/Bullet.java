@@ -4,6 +4,8 @@ package GameObjects;
 import Game.GameConstants;
 import Game.GameWorld;
 import Game.Tank;
+import Utilities.Animation;
+import Utilities.ResourceManager;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -16,14 +18,16 @@ public class Bullet extends GameObject {
     private float R = 5;
     public int tankID;
     public float bulletDamage;
+    private GameWorld gw;
 
-    public Bullet(float x, float y, BufferedImage img, float angle, int tankId,float bulletDamage) {
+    public Bullet(float x, float y, BufferedImage img, float angle, int tankId,float bulletDamage,GameWorld gw) {
         super(x,y,img);
         this.vx = 0;
         this.vy = 0;
         this.angle = angle;
         this.tankID = tankId;
         this.bulletDamage = bulletDamage;
+        this.gw = gw;
     }
 
     public void update() {
@@ -69,11 +73,20 @@ public class Bullet extends GameObject {
     @Override
     public void collides(GameObject with) {
         if( with instanceof Wall w){
-            w.collides(this);
+            if(w instanceof BreakableWall){
+                w.collides(this);
+            }
+            else if(w instanceof RandomDrop){
+
+                w.collides(this);
+            }
+            gw.addToAnims(new Animation(x-20,y-20,ResourceManager.getAnimation("bullethit")));
             this.hasCollided = true;
         }else if(with instanceof Tank && ((Tank) with).id != tankID){
             this.hasCollided = true;
+            gw.addToAnims(new Animation(x-20,y-20,ResourceManager.getAnimation("bullethit")));
         }
+        ResourceManager.getSound("explosion").playSound();
     }
 
 }

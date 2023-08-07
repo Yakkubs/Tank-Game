@@ -24,8 +24,12 @@ public class Damage extends GameObject implements PowerUps {
     }
 
     @Override
-    public void applyPowerUp(Tank tank) {
-        tank.addDamage();
-        collides(tank);
+    public boolean applyPowerUp(Tank tank) {
+        if (tank.getBulletDamage() < 7) {
+            tank.addDamage();
+            collides(tank);
+            return true;
+        }
+        return false;
     }
 }
