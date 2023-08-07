@@ -302,7 +302,7 @@ public class Tank extends GameObject {
     public void resetTank(){
         this.health = 10;
         this.armor = 0;
-        this.lifeCount = 1;
+        this.lifeCount = 5;
         this.bulletDamage = 2;
         this.healthCap = 10;
         this.angle = this.initialAngle;

@@ -14,7 +14,6 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,8 +127,8 @@ public class GameWorld extends JPanel implements Runnable {
         this.gobjs.clear();
         //reinitialize the map and tanks
         initializeTanks();
-        this.t1.resetTank();
-        this.t2.resetTank();
+        //this.t1.resetTank();
+        //this.t2.resetTank();
         this.createMap();
     }
 
