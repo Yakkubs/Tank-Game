@@ -3,7 +3,6 @@ package GameObjects;
 
 import Game.GameConstants;
 import Game.GameWorld;
-import Game.Tank;
 import Utilities.Animation;
 import Utilities.ResourceManager;
 

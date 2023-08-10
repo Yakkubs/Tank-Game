@@ -1,11 +1,9 @@
 package Utilities;
 
 import Game.GameConstants;
-import Game.Tank;
+import GameObjects.Tank;
 
 import java.awt.*;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
 
 public class Hud {
     private Tank tank1;

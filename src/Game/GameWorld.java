@@ -28,7 +28,7 @@ public class GameWorld extends JPanel implements Runnable {
     private final Launcher lf;
     private long tick = 0;
     private Sound bg = ResourceManager.getSound("bg");
-    List<GameObject> gobjs = new ArrayList<>(1000);
+    private List<GameObject> gobjs = new ArrayList<>(1000);
     private List<Animation> anims = new ArrayList<>();
     private boolean hasWon = false;
 
@@ -126,9 +126,8 @@ public class GameWorld extends JPanel implements Runnable {
         //clearing the gobjs list
         this.gobjs.clear();
         //reinitialize the map and tanks
+        this.anims.clear();
         initializeTanks();
-        //this.t1.resetTank();
-        //this.t2.resetTank();
         this.createMap();
     }
 
@@ -176,6 +175,13 @@ public class GameWorld extends JPanel implements Runnable {
     public void addToAnims(Animation a){
         anims.add(a);
     }
+    public void addToGobjs(GameObject g){
+        gobjs.add(g);
+    }
+    public List<GameObject> getGameObjects(){
+        return gobjs;
+    }
+
     public void renderFloor(Graphics g){
         for (int i = 0; i < GameConstants.GAME_WORLD_WIDTH; i+=320) {
             for (int j = 0; j < GameConstants.GAME_WORLD_HEIGHT; j+=240){
